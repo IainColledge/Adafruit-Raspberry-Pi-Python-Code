@@ -313,6 +313,12 @@ class Adafruit_TSL2651(Adafruit_I2C):
 #   the TSL2561, adjusting gain if auto-gain is enabled
 #**************************************************************************/
     def getLuminosity (self):
+        # This is a hack to ensure that when looping with autogain the gain can go up and down as without
+        # setting the gain to 1X before every reading it doesn't seem able to go from 16X
+        # back to 1X again. Going from 1X to 16X works fine. - IC
+        if (self._tsl2561AutoGain):
+            self.setGain(self.TSL2561_GAIN_1X)
+
         if (self._debug == True): print "getLuminosity"
         valid = False
 
@@ -484,7 +490,6 @@ class Adafruit_TSL2651(Adafruit_I2C):
 #   Calculates an averaged Lux value over default 30 samples
 #**************************************************************************/
     def calculateAvgLux(self, testavg=int(30)):
-        self.setGain(self.TSL2561_GAIN_1X)
         # Set initial vars
         count = 0
         luxavgtotal = 0
