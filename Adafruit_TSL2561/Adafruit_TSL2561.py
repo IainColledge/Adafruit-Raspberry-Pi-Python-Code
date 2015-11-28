@@ -197,11 +197,11 @@ class Adafruit_TSL2651(Adafruit_I2C):
 
         # Wait x ms for ADC to complete */
         if self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_13MS:
-            time.sleep(TSL2561_DELAY_INTTIME_13MS)
+            time.sleep(self.TSL2561_DELAY_INTTIME_13MS)
         elif self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_101MS:
-          time.sleep(TSL2561_DELAY_INTTIME_101MS)
+          time.sleep(self.TSL2561_DELAY_INTTIME_101MS)
         else:
-          time.sleep(TSL2561_DELAY_INTTIME_402MS)
+          time.sleep(self.TSL2561_DELAY_INTTIME_402MS)
 
 
         # Reads a two byte value from channel 0 (visible + infrared) */
