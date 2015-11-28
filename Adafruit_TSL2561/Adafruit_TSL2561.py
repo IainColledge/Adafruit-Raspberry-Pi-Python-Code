@@ -484,6 +484,7 @@ class Adafruit_TSL2651(Adafruit_I2C):
 #   Calculates an averaged Lux value over default 30 samples
 #**************************************************************************/
     def calculateAvgLux(self, testavg=int(30)):
+        self.setGain(self.TSL2561_GAIN_16X)
         # Set initial vars
         count = 0
         luxavgtotal = 0
@@ -500,7 +501,6 @@ class Adafruit_TSL2651(Adafruit_I2C):
 if __name__ == "__main__":
     LightSensor = Adafruit_TSL2651()
 #    LightSensor.enableAutoGain(True)
-    LightSensor.setGain(LightSensor.TSL2561_GAIN_16X)
 
     # See if "loop" has been passed as an arg.
     try:
