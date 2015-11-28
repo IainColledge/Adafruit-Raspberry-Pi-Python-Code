@@ -8,7 +8,17 @@
 # The thread on the Adafruit forum helped a lot to do this.
 # Thanks to static, huelke, pandring, adafruit_support_rick, scortier, bryand, csalty, lenos and of course to Adafruit
 # Source for the Arduino library: https://github.com/adafruit/TSL2561-Arduino-Library
-# Adafruit form thread:http://forums.adafruit.com/viewtopic.php?f=8&t=34922&sid=8336d566f2f03c25882aaf34c8a15a92
+# Adafruit forum thread:http://forums.adafruit.com/viewtopic.php?f=8&t=34922&sid=8336d566f2f03c25882aaf34c8a15a92
+#
+# Original code posted here http://forums.adafruit.com/viewtopic.php?f=8&t=34922&start=75#p222877
+#
+# Changes by Iain Colledge
+#
+# Removed commented out C++ code
+# Added calculateAvgLux
+# Changed main method to use calculateAvgLux and looping support added.
+# Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
+#
 
 import sys
 import time
@@ -124,6 +134,10 @@ class Adafruit_TSL2651(Adafruit_I2C):
     TSL2561_INTEGRATIONTIME_13MS      = 0x00    # 13.7ms
     TSL2561_INTEGRATIONTIME_101MS     = 0x01    # 101ms
     TSL2561_INTEGRATIONTIME_402MS     = 0x02    # 402ms
+
+    TSL2561_DELAY_INTTIME_13MS        = 0.015
+    TSL2561_DELAY_INTTIME_101MS       = 0.120
+    TSL2561_DELAY_INTTIME_402MS       = 0.450
     
     TSL2561_GAIN_1X                   = 0x00    # No gain
     TSL2561_GAIN_16X                  = 0x10    # 16x gain
@@ -183,11 +197,11 @@ class Adafruit_TSL2651(Adafruit_I2C):
 
         # Wait x ms for ADC to complete */
         if self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_13MS:
-            time.sleep(0.014)
+            time.sleep(TSL2561_DELAY_INTTIME_13MS)
         elif self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_101MS:
-          time.sleep(0.102)
+          time.sleep(TSL2561_DELAY_INTTIME_101MS)
         else:
-          time.sleep(0.403)
+          time.sleep(TSL2561_DELAY_INTTIME_402MS)
 
 
         # Reads a two byte value from channel 0 (visible + infrared) */
@@ -482,48 +496,6 @@ class Adafruit_TSL2651(Adafruit_I2C):
             if ( count >= testavg ):
                 luxavg = round(luxavgtotal / testavg)
                 return (luxavg)
-
-'''
-#**************************************************************************/
-#   Gets the most recent sensor event
-#**************************************************************************/
-void Adafruit_TSL2561::getEvent(sensors_event_t *event)
-{
-  uint16_t broadband, ir;
-  
-  # Clear the event */
-  memset(event, 0, sizeof(sensors_event_t));
-  
-  event->version   = sizeof(sensors_event_t);
-  event->sensor_id = _tsl2561SensorID;
-  event->type      = SENSOR_TYPE_LIGHT;
-  event->timestamp = 0;
-
-  # Calculate the actual lux value */
-  getLuminosity(&broadband, &ir);
-  event->light = calculateLux(broadband, ir);
-}
-
-#**************************************************************************/
-#   Gets the sensor_t data
-#**************************************************************************/
-void Adafruit_TSL2561::getSensor(sensor_t *sensor)
-{
-  # Clear the sensor_t object */
-  memset(sensor, 0, sizeof(sensor_t));
-
-  # Insert the sensor name in the fixed length char array */
-  strncpy (sensor->name, "TSL2561", sizeof(sensor->name) - 1);
-  sensor->name[sizeof(sensor->name)- 1] = 0;
-  sensor->version     = 1;
-  sensor->sensor_id   = _tsl2561SensorID;
-  sensor->type        = SENSOR_TYPE_LIGHT;
-  sensor->min_delay   = 0;
-  sensor->max_value   = 17000.0;  /* Based on trial and error ... confirm! */
-  sensor->min_value   = 0.0;
-  sensor->resolution  = 1.0;
-}
-'''
 
 if __name__ == "__main__":
     LightSensor = Adafruit_TSL2651()
