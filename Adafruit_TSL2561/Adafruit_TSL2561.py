@@ -500,8 +500,8 @@ class Adafruit_TSL2651(Adafruit_I2C):
 if __name__ == "__main__":
     LightSensor = Adafruit_TSL2651()
 #    LightSensor.enableAutoGain(True)
-    #while True:
-    #    print LightSensor.calculateLux(), " Lux"
+    self.setGain(self.TSL2561_GAIN_16X)
+
     # See if "loop" has been passed as an arg.
     try:
         arg = sys.argv[1]
