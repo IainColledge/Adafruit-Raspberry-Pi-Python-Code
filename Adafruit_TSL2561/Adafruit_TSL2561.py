@@ -490,9 +490,9 @@ class Adafruit_TSL2651(Adafruit_I2C):
         return lux
 
 #**************************************************************************/
-#   Calculates an averaged Lux value over default 30 samples
+#   Calculates an averaged Lux value over default 25 samples
 #**************************************************************************/
-    def calculateAvgLux(self, testavg=self.TSL2561_NO_OF_AVG_SAMPLES):
+    def calculateAvgLux(self, testavg=TSL2561_NO_OF_AVG_SAMPLES):
         # Set initial vars
         count = 0
         luxavgtotal = 0
