@@ -18,7 +18,7 @@
 # Added calculateAvgLux
 # Changed main method to use calculateAvgLux and looping support added.
 # Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
-# Added have so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
+# Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 #
 
 import sys
