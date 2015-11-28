@@ -18,6 +18,7 @@
 # Added calculateAvgLux
 # Changed main method to use calculateAvgLux and looping support added.
 # Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
+# Added have so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 #
 
 import sys
@@ -141,6 +142,8 @@ class Adafruit_TSL2651(Adafruit_I2C):
     
     TSL2561_GAIN_1X                   = 0x00    # No gain
     TSL2561_GAIN_16X                  = 0x10    # 16x gain
+
+    TSL2561_NO_OF_AVG_SAMPLES         = 25      # How many samples to make an average reading
     
     
     
@@ -489,7 +492,7 @@ class Adafruit_TSL2651(Adafruit_I2C):
 #**************************************************************************/
 #   Calculates an averaged Lux value over default 30 samples
 #**************************************************************************/
-    def calculateAvgLux(self, testavg=int(30)):
+    def calculateAvgLux(self, testavg=self.TSL2561_NO_OF_AVG_SAMPLES):
         # Set initial vars
         count = 0
         luxavgtotal = 0
