@@ -293,7 +293,7 @@ class Adafruit_TSL2651(Adafruit_I2C):
     def setGain(self, gain):
         if (self._debug == True): print "setGain"
         if (not self._tsl2561Initialised):
-            begin()
+            self.begin()
 
         # Enable the device by setting the control bit to 0x03 */
         self.enable()
