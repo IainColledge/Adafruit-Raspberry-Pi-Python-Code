@@ -20,6 +20,9 @@
 # Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
 # Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 #
+# This was checked against a £10 lux meter from Amazon and was withing 10% up and down the range, the meter
+# had a stated accuracy of 5% but then again, £10 meter.
+#
 
 import sys
 import time
