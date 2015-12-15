@@ -30,9 +30,12 @@ Changelog:
     Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 """
 
+import logging
+# Logging needs to be set before any other library is imported
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 import sys
 import time
-import logging
 from Adafruit_I2C import Adafruit_I2C
 
 
@@ -547,8 +550,6 @@ class AdafruitTSL2561(Adafruit_I2C):
 if __name__ == "__main__":
     LightSensor = AdafruitTSL2561()
     LightSensor.enable_auto_gain(True)
-
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     # See if "loop" has been passed as an arg.
     try:
