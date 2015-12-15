@@ -233,21 +233,21 @@ class AdafruitTSL2561(Adafruit_I2C):
         self.disable()
         logging.debug('getData_end"')
 
-    def __init__(self, address, addr=TSL2561_ADDR_FLOAT, debug=False):
+    def __init__(self, address=TSL2561_ADDR_FLOAT, debug=False):
         """
         Constructor
 
-        :param addr: I2C address of TSL2561, defaults to 0x39
+        :param address: I2C address of TSL2561, defaults to 0x39
         :param debug: Turn on debugging, defaults to False
         """
         self._debug = debug
         logging.debug('__init__"')
-        self._addr = addr
+        self._address = address
         self._tsl2561Initialised = False
         self._tsl2561AutoGain = False
         self._tsl2561IntegrationTime = self.TSL2561_INTEGRATIONTIME_13MS
         self._tsl2561Gain = self.TSL2561_GAIN_1X
-        self._i2c = Adafruit_I2C(self._addr)
+        self._i2c = Adafruit_I2C(self._address)
         self._luminosity = 0
         self._broadband = 0
         self._ir = 0
