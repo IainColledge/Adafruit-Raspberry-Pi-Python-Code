@@ -293,25 +293,25 @@ class AdafruitTSL2561(Adafruit_I2C):
             self._tsl2561AutoGain = False
         if self._debug == True: print "enableAutoGain_end"
 
-    def set_integration_time(self, time):
+    def set_integration_time(self, integration_time):
         """
-        Sets the integration time for the TSL2561
+        Sets the integration integration_time for the TSL2561
 
-        :param time:
+        :param integration_time:
         :return:
         """
         if self._debug == True: print "set_integration_time"
         if not self._tsl2561Initialised:
-            self.begin
+            self.begin()
 
         # Enable the device by setting the control bit to 0x03 */
         self.enable()
 
         # Update the timing register */
-        self.write8(self.TSL2561_COMMAND_BIT | self.TSL2561_REGISTER_TIMING, time | self._tsl2561Gain)
+        self.write8(self.TSL2561_COMMAND_BIT | self.TSL2561_REGISTER_TIMING, integration_time | self._tsl2561Gain)
 
         # Update value placeholders */
-        self._tsl2561IntegrationTime = time
+        self._tsl2561IntegrationTime = integration_time
 
         # Turn the device off to save power */
         self.disable()
@@ -325,7 +325,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         """
         if self._debug == True: print "set_gain"
         if not self._tsl2561Initialised:
-            self.begin
+            self.begin()
 
         # Enable the device by setting the control bit to 0x03 */
         self.enable()
@@ -356,7 +356,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         valid = False
 
         if not self._tsl2561Initialised:
-            self.begin
+            self.begin()
 
         # If Auto gain disabled get a single reading and continue */
         if not self._tsl2561AutoGain:
@@ -506,6 +506,7 @@ class AdafruitTSL2561(Adafruit_I2C):
                 m=self.TSL2561_LUX_M8T
         # endif
 
+        # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
         temp = ((channel0 * b) - (channel1 * m))
 
         # Do not allow negative lux value */
