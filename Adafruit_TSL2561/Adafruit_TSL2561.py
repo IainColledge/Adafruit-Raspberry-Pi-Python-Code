@@ -14,14 +14,23 @@
 #
 # Changes by Iain Colledge
 #
-# Removed commented out C++ code
-# Added calculateAvgLux
-# Changed main method to use calculateAvgLux and loop argument support added.
-# Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
-# Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
+
 #
 # This was checked against a 10 UKP lux meter from Amazon and was withing 10% up and down the range, the meter
 # had a stated accuracy of 5% but then again, 10 UKP meter.
+#
+# Changelog:
+#
+# 1.1 - Fixes from https://forums.adafruit.com/viewtopic.php?f=8&t=34922&p=430795#p430782 - Iain Colledge
+#   Bug #1: The class name has the middle two digits transposed - Adafruit_TSL2651 should be Adafruit_TSL2561
+#   Bug #2: The read8 and read16 methods (functions) call the I2C readS8 and readS16 methods respectively.
+#           They should call the readU8 and readU16 (i.e. unsigned) methods.
+# 1.0 - Initial release - Iain Colledge
+#   Removed commented out C++ code
+#   Added calculateAvgLux
+#   Changed main method to use calculateAvgLux and loop argument support added.
+#   Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
+#   Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 #
 
 import sys
@@ -164,7 +173,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
 #**************************************************************************/
     def read8(self, reg):
         if (self._debug == True): print "read8"
-        return self._i2c.readS8(reg)
+        return self._i2c.readU8(reg)
         if (self._debug == True): print "read8_end"
 
 #**************************************************************************/
@@ -172,7 +181,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
 #**************************************************************************/
     def read16(self, reg):
         if (self._debug == True): print "read16"
-        return self._i2c.readS16(reg)
+        return self._i2c.readU16(reg)
         if (self._debug == True): print "read16_end"
 
 #**************************************************************************/
@@ -322,8 +331,8 @@ class Adafruit_TSL2561(Adafruit_I2C):
         # This is a hack to ensure that when looping with autogain the gain can go up and down as without
         # setting the gain to 1X before every reading it doesn't seem able to go from 16X
         # back to 1X again. Going from 1X to 16X works fine. - IC
-        if (self._tsl2561AutoGain):
-            self.setGain(self.TSL2561_GAIN_1X)
+#        if (self._tsl2561AutoGain):
+#            self.setGain(self.TSL2561_GAIN_1X)
 
         if (self._debug == True): print "getLuminosity"
         valid = False
@@ -409,7 +418,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
             chScale = (1 << self.TSL2561_LUX_CHSCALE)
 
         # Scale for gain (1x or 16x) */
-        if (not self._tsl2561Gain): 
+        if (not self._tsl2561Gain):
             chScale = chScale << 4
 
         # Scale the channel values */
