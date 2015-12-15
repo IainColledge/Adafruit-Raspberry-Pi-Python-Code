@@ -31,12 +31,13 @@ Changelog:
 """
 
 import logging
-# Logging needs to be set before any other library is imported
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
 import sys
 import time
 from Adafruit_I2C import Adafruit_I2C
+
+# Logging needs to be set at top
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 
 
 class AdafruitTSL2561(Adafruit_I2C):
