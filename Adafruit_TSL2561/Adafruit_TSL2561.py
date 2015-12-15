@@ -274,7 +274,6 @@ class Adafruit_TSL2561(Adafruit_I2C):
 #**************************************************************************
     def enableAutoGain(self, enable):
         if (self._debug == True): print "enableAutoGain"
-        self._tsl2561AutoGain = enable if True else False
         if (enable == True):
             self._tsl2561AutoGain = enable
         else:
