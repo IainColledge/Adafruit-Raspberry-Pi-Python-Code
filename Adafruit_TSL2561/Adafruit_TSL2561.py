@@ -36,7 +36,7 @@ import time
 from Adafruit_I2C import Adafruit_I2C
 
 # Logging needs to be set at top
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 
