@@ -21,8 +21,8 @@ Changelog:
     Bug #1: The class name has the middle two digits transposed - Adafruit_TSL2651 should be Adafruit_TSL2561
     Bug #2: The read8 and read16 methods (functions) call the I2C readS8 and readS16 methods respectively.
             They should call the readU8 and readU16 (i.e. unsigned) methods.
-    Minor fixes and changes
-  1.0 - Initial release - Iain Colledge
+    Minor fixes and changes due to Pycharm and SonarQube recommendations, it looks like Python more than C++ now
+1.0 - Initial release - Iain Colledge
     Removed commented out C++ code
     Added calculate_avg_lux
     Changed main method to use calculate_avg_lux and loop argument support added.
@@ -548,7 +548,7 @@ if __name__ == "__main__":
     LightSensor = AdafruitTSL2561()
     LightSensor.enable_auto_gain(True)
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     # See if "loop" has been passed as an arg.
     try:
