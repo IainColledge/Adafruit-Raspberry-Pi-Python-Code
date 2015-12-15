@@ -233,6 +233,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         self.disable()
         logging.debug('getData_end"')
 
+    # noinspection PyMissingConstructor
     def __init__(self, address=TSL2561_ADDR_FLOAT, debug=False):
         """
         Constructor
@@ -364,7 +365,7 @@ class AdafruitTSL2561(Adafruit_I2C):
             return
 
         # Read data until we find a valid range */
-        _agcCheck = False
+        agc_check = False
         while not valid:
             _it = self._tsl2561IntegrationTime
 
@@ -382,21 +383,21 @@ class AdafruitTSL2561(Adafruit_I2C):
             self.get_data()
 
             # Run an auto-gain check if we haven't already done so ... */
-            if not _agcCheck:
+            if not agc_check:
                 if (self._broadband < _lo) and (self._tsl2561Gain == self.TSL2561_GAIN_1X):
                     # Increase the gain and try again */
                     self.set_gain(self.TSL2561_GAIN_16X)
                     # Drop the previous conversion results */
                     self.get_data()
                     # Set a flag to indicate we've adjusted the gain */
-                    _agcCheck = True
+                    agc_check = True
                 elif (self._broadband > _hi) and (self._tsl2561Gain == self.TSL2561_GAIN_16X):
                     # Drop gain to 1x and try again */
                     self.set_gain(self.TSL2561_GAIN_1X)
                     # Drop the previous conversion results */
                     self.get_data()
                     # Set a flag to indicate we've adjusted the gain */
-                    _agcCheck = True
+                    agc_check = True
                 else:
                     # Nothing to look at here, keep moving ....
                     # Reading is either valid, or we're already at the chips limits */
@@ -436,7 +437,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         elif self._tsl2561IntegrationTime ==self.TSL2561_INTEGRATIONTIME_101MS:
             ch_scale = self.TSL2561_LUX_CHSCALE_TINT1
         else:
-            ch_scale = (1 << self.TSL2561_LUX_CHSCALE)
+            ch_scale = 1 << self.TSL2561_LUX_CHSCALE
 
         # Scale for gain (1x or 16x) */
         if not self._tsl2561Gain:
@@ -507,14 +508,14 @@ class AdafruitTSL2561(Adafruit_I2C):
         # endif
 
         # noinspection PyUnboundLocalVariable,PyUnboundLocalVariable
-        temp = ((channel0 * b) - (channel1 * m))
+        temp = (channel0 * b) - (channel1 * m)
 
         # Do not allow negative lux value */
         if temp < 0:
             temp = 0
 
         # Round lsb (2^(LUX_SCALE-1)) */
-        temp += (1 << (self.TSL2561_LUX_LUXSCALE - 1))
+        temp += 1 << (self.TSL2561_LUX_LUXSCALE - 1)
 
         # Strip off fractional portion */
         lux = temp >> self.TSL2561_LUX_LUXSCALE
