@@ -176,7 +176,6 @@ class AdafruitTSL2561(Adafruit_I2C):
         """
         logging.debug('read8')
         return self._i2c.readU8(reg)
-        logging.debug('read8_end')
 
     def read16(self, reg):
         """
@@ -187,7 +186,6 @@ class AdafruitTSL2561(Adafruit_I2C):
         """
         logging.debug('read16')
         return self._i2c.readU16(reg)
-        logging.debug('read16_end')
 
     def enable(self):
         """
@@ -225,6 +223,7 @@ class AdafruitTSL2561(Adafruit_I2C):
             time.sleep(self.TSL2561_DELAY_INTTIME_402MS)
 
         # Reads a two byte value from channel 0 (visible + infrared) */
+        # noinspection PyPep8
         self._broadband = self.read16(self.TSL2561_COMMAND_BIT | self.TSL2561_WORD_BIT | self.TSL2561_REGISTER_CHAN0_LOW)
 
         # Reads a two byte value from channel 1 (infrared) */
@@ -234,7 +233,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         self.disable()
         logging.debug('getData_end"')
 
-    def __init__(self, addr=TSL2561_ADDR_FLOAT, debug=False):
+    def __init__(self, address, addr=TSL2561_ADDR_FLOAT, debug=False):
         """
         Constructor
 
@@ -441,7 +440,7 @@ class AdafruitTSL2561(Adafruit_I2C):
 
         # Scale for gain (1x or 16x) */
         if not self._tsl2561Gain:
-            ch_scale = ch_scale << 4
+            ch_scale <<= 4
 
         # Scale the channel values */
         channel0 = (self._broadband * ch_scale) >> self.TSL2561_LUX_CHSCALE
@@ -537,7 +536,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         # Create a cumulative total of values for 'testavg' tests
         while True:
             capture = self.calculate_lux()
-            luxavgtotal = capture + luxavgtotal
+            luxavgtotal += capture
             count += 1
             # Once we reach the number of required tests, work out the average
             if count >= testavg:
