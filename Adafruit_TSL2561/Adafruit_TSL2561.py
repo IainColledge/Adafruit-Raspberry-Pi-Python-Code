@@ -24,8 +24,8 @@ Changelog:
     Minor fixes and changes
   1.0 - Initial release - Iain Colledge
     Removed commented out C++ code
-    Added calculateAvgLux
-    Changed main method to use calculateAvgLux and loop argument support added.
+    Added calculate_avg_lux
+    Changed main method to use calculate_avg_lux and loop argument support added.
     Ported "Extended delays to take into account loose timing with 'delay'" update from CPP code
     Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 """
@@ -34,7 +34,8 @@ import sys
 import time
 from Adafruit_I2C import Adafruit_I2C
 
-class Adafruit_TSL2561(Adafruit_I2C):
+
+class AdafruitTSL2561(Adafruit_I2C):
     TSL2561_VISIBLE           = 2       # channel 0 - channel 1
     TSL2561_INFRARED          = 1       # channel 1
     TSL2561_FULLSPECTRUM      = 0       # channel 0
@@ -87,7 +88,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
     TSL2561_LUX_K8T           = 0x029a  # 1.3 * 2^RATIO_SCALE
     TSL2561_LUX_B8T           = 0x0000  # 0.000 * 2^LUX_SCALE
     TSL2561_LUX_M8T           = 0x0000  # 0.000 * 2^LUX_SCALE
-    
+
     # CS package values
     TSL2561_LUX_K1C           = 0x0043  # 0.130 * 2^RATIO_SCALE
     TSL2561_LUX_B1C           = 0x0204  # 0.0315 * 2^LUX_SCALE
@@ -140,7 +141,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
     TSL2561_REGISTER_CHAN0_HIGH       = 0x0D
     TSL2561_REGISTER_CHAN1_LOW        = 0x0E
     TSL2561_REGISTER_CHAN1_HIGH       = 0x0F
-    
+
     TSL2561_INTEGRATIONTIME_13MS      = 0x00    # 13.7ms
     TSL2561_INTEGRATIONTIME_101MS     = 0x01    # 101ms
     TSL2561_INTEGRATIONTIME_402MS     = 0x02    # 402ms
@@ -148,13 +149,13 @@ class Adafruit_TSL2561(Adafruit_I2C):
     TSL2561_DELAY_INTTIME_13MS        = 0.015
     TSL2561_DELAY_INTTIME_101MS       = 0.120
     TSL2561_DELAY_INTTIME_402MS       = 0.450
-    
+
     TSL2561_GAIN_1X                   = 0x00    # No gain
     TSL2561_GAIN_16X                  = 0x10    # 16x gain
 
     TSL2561_NO_OF_AVG_SAMPLES         = 25      # How many samples to make an average reading
-    
-    def write8 (self, reg, value):
+
+    def write8(self, reg, value):
         """
         Writes a register and an 8 bit value over I2C
 
@@ -205,32 +206,31 @@ class Adafruit_TSL2561(Adafruit_I2C):
         self._i2c.write8(self.TSL2561_COMMAND_BIT | self.TSL2561_REGISTER_CONTROL, self.TSL2561_CONTROL_POWEROFF)
         if (self._debug == True): print "disable_end"
 
-    def getData (self):
+    def get_data(self):
         """
         Private function to read luminosity on both channels
         """
-        if (self._debug == True): print "getData"
+        if (self._debug == True): print "get_data"
 
-        #Enables the device by setting the control bit to 0x03
-        self.enable();
+        # Enables the device by setting the control bit to 0x03
+        self.enable()
 
         # Wait x ms for ADC to complete */
         if self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_13MS:
             time.sleep(self.TSL2561_DELAY_INTTIME_13MS)
         elif self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_101MS:
-          time.sleep(self.TSL2561_DELAY_INTTIME_101MS)
+            time.sleep(self.TSL2561_DELAY_INTTIME_101MS)
         else:
-          time.sleep(self.TSL2561_DELAY_INTTIME_402MS)
-
+            time.sleep(self.TSL2561_DELAY_INTTIME_402MS)
 
         # Reads a two byte value from channel 0 (visible + infrared) */
-        self._broadband = self.read16(self.TSL2561_COMMAND_BIT | self.TSL2561_WORD_BIT | self.TSL2561_REGISTER_CHAN0_LOW);
+        self._broadband = self.read16(self.TSL2561_COMMAND_BIT | self.TSL2561_WORD_BIT | self.TSL2561_REGISTER_CHAN0_LOW)
 
         # Reads a two byte value from channel 1 (infrared) */
-        self._ir = self.read16(self.TSL2561_COMMAND_BIT | self.TSL2561_WORD_BIT | self.TSL2561_REGISTER_CHAN1_LOW);
+        self._ir = self.read16(self.TSL2561_COMMAND_BIT | self.TSL2561_WORD_BIT | self.TSL2561_REGISTER_CHAN1_LOW)
 
         # Turn the device off to save power */
-        self.disable();
+        self.disable()
         if (self._debug == True): print "getData_end"
 
     def __init__(self, addr=TSL2561_ADDR_FLOAT, debug=False):
@@ -264,48 +264,48 @@ class Adafruit_TSL2561(Adafruit_I2C):
         """
         if (self._debug == True): print "begin"
         # Make sure we're actually connected */
-        x = self.read8(self.TSL2561_REGISTER_ID);
+        x = self.read8(self.TSL2561_REGISTER_ID)
         if not(x & 0x0A):
             return False
         self._tsl2561Initialised = True
 
         # Set default integration time and gain */
-        self.setIntegrationTime(self._tsl2561IntegrationTime)
-        self.setGain(self._tsl2561Gain)
+        self.set_integration_time(self._tsl2561IntegrationTime)
+        self.set_gain(self._tsl2561Gain)
 
         # Note: by default, the device is in power down mode on bootup */
         self.disable()
         if (self._debug == True): print "begin_end"
 
         return True
- 
-    def enableAutoGain(self, enable):
+
+    def enable_auto_gain(self, enable):
         """
         Enables or disables the auto-gain settings when reading
         data from the sensor
 
         :param enable: True to enable
         """
-        if (self._debug == True): print "enableAutoGain"
+        if (self._debug == True): print "enable_auto_gain"
         if (enable == True):
             self._tsl2561AutoGain = enable
         else:
             self._tsl2561AutoGain = False
         if (self._debug == True): print "enableAutoGain_end"
 
-    def setIntegrationTime(self, time):
+    def set_integration_time(self, time):
         """
         Sets the integration time for the TSL2561
 
         :param time:
         :return:
         """
-        if (self._debug == True): print "setIntegrationTime"
+        if (self._debug == True): print "set_integration_time"
         if (not self._tsl2561Initialised):
             self.begin
 
         # Enable the device by setting the control bit to 0x03 */
-        self.enable();
+        self.enable()
 
         # Update the timing register */
         self.write8(self.TSL2561_COMMAND_BIT | self.TSL2561_REGISTER_TIMING, time | self._tsl2561Gain)
@@ -316,14 +316,14 @@ class Adafruit_TSL2561(Adafruit_I2C):
         # Turn the device off to save power */
         self.disable()
         if (self._debug == True): print "setIntegrationTime_end"
- 
-    def setGain(self, gain):
+
+    def set_gain(self, gain):
         """
         Adjusts the gain on the TSL2561 (adjusts the sensitivity to light)
 
         :param gain:
         """
-        if (self._debug == True): print "setGain"
+        if (self._debug == True): print "set_gain"
         if (not self._tsl2561Initialised):
             self.begin
 
@@ -340,7 +340,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
         self.disable()
         if (self._debug == True): print "setGain_end"
 
-    def getLuminosity (self):
+    def get_luminosity(self):
         """
         Gets the broadband (mixed lighting) and IR only values from
         the TSL2561, adjusting gain if auto-gain is enabled
@@ -350,23 +350,23 @@ class Adafruit_TSL2561(Adafruit_I2C):
         # setting the gain to 1X before every reading it doesn't seem able to go from 16X
         # back to 1X again. Going from 1X to 16X works fine. - IC
         if (self._tsl2561AutoGain):
-            self.setGain(self.TSL2561_GAIN_1X)
+            self.set_gain(self.TSL2561_GAIN_1X)
 
-        if (self._debug == True): print "getLuminosity"
+        if (self._debug == True): print "get_luminosity"
         valid = False
 
         if (not self._tsl2561Initialised):
-             self.begin
+            self.begin
 
         # If Auto gain disabled get a single reading and continue */
         if(not self._tsl2561AutoGain):
-            self.getData()
+            self.get_data()
             return
 
         # Read data until we find a valid range */
         _agcCheck = False
         while (not valid):
-            _it = self._tsl2561IntegrationTime;
+            _it = self._tsl2561IntegrationTime
 
             # Get the hi/low threshold for the current integration time */
             if _it==self.TSL2561_INTEGRATIONTIME_13MS:
@@ -379,22 +379,22 @@ class Adafruit_TSL2561(Adafruit_I2C):
                 _hi = self.TSL2561_AGC_THI_402MS
                 _lo = self.TSL2561_AGC_TLO_402MS
 
-            self.getData()
+            self.get_data()
 
             # Run an auto-gain check if we haven't already done so ... */
             if (not _agcCheck):
                 if ((self._broadband < _lo) and (self._tsl2561Gain == self.TSL2561_GAIN_1X)):
                     # Increase the gain and try again */
-                    self.setGain(self.TSL2561_GAIN_16X)
+                    self.set_gain(self.TSL2561_GAIN_16X)
                     # Drop the previous conversion results */
-                    self.getData()
+                    self.get_data()
                     # Set a flag to indicate we've adjusted the gain */
                     _agcCheck = True
                 elif ((self._broadband > _hi) and (self._tsl2561Gain == self.TSL2561_GAIN_16X)):
                     # Drop gain to 1x and try again */
-                    self.setGain(self.TSL2561_GAIN_1X)
+                    self.set_gain(self.TSL2561_GAIN_1X)
                     # Drop the previous conversion results */
-                    self.getData()
+                    self.get_data()
                     # Set a flag to indicate we've adjusted the gain */
                     _agcCheck = True
                 else:
@@ -407,49 +407,49 @@ class Adafruit_TSL2561(Adafruit_I2C):
                 # and the the other extreme post-gain */
                 valid = True
         if (self._debug == True): print "getLuminosity_end"
-        
-    def calculateLux(self):
+
+    def calculate_lux(self):
         """
         Converts the raw sensor values to the standard SI lux equivalent.
         Returns 0 if the sensor is saturated and the values are unreliable.
 
         :return: lux value, unsigned 16bit word (0 - 65535)
         """
-        if (self._debug == True): print "calculateLux"
-        self.getLuminosity()
+        if (self._debug == True): print "calculate_lux"
+        self.get_luminosity()
         # Make sure the sensor isn't saturated! */
         if (self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_13MS):
-            clipThreshold = self.TSL2561_CLIPPING_13MS
+            clip_threshold = self.TSL2561_CLIPPING_13MS
         elif (self._tsl2561IntegrationTime == self.TSL2561_INTEGRATIONTIME_101MS):
-            clipThreshold = self.TSL2561_CLIPPING_101MS
+            clip_threshold = self.TSL2561_CLIPPING_101MS
         else:
-            clipThreshold = self.TSL2561_CLIPPING_402MS
+            clip_threshold = self.TSL2561_CLIPPING_402MS
 
         # Return 0 lux if the sensor is saturated */
         # TODO: Throw an exception rather than return 0
-        if ((self._broadband > clipThreshold) or (self._ir > clipThreshold)):
+        if ((self._broadband > clip_threshold) or (self._ir > clip_threshold)):
             return 0
 
         # Get the correct scale depending on the intergration time */
         if (self._tsl2561IntegrationTime ==self.TSL2561_INTEGRATIONTIME_13MS):
-            chScale = self.TSL2561_LUX_CHSCALE_TINT0
+            ch_scale = self.TSL2561_LUX_CHSCALE_TINT0
         elif (self._tsl2561IntegrationTime ==self.TSL2561_INTEGRATIONTIME_101MS):
-            chScale = self.TSL2561_LUX_CHSCALE_TINT1
+            ch_scale = self.TSL2561_LUX_CHSCALE_TINT1
         else:
-            chScale = (1 << self.TSL2561_LUX_CHSCALE)
+            ch_scale = (1 << self.TSL2561_LUX_CHSCALE)
 
         # Scale for gain (1x or 16x) */
         if (not self._tsl2561Gain):
-            chScale = chScale << 4
+            ch_scale = ch_scale << 4
 
         # Scale the channel values */
-        channel0 = (self._broadband * chScale) >> self.TSL2561_LUX_CHSCALE
-        channel1 = (self._ir * chScale) >> self.TSL2561_LUX_CHSCALE
+        channel0 = (self._broadband * ch_scale) >> self.TSL2561_LUX_CHSCALE
+        channel1 = (self._ir * ch_scale) >> self.TSL2561_LUX_CHSCALE
 
         # Find the ratio of the channel values (Channel1/Channel0) */
-        ratio1 = 0;
+        ratio1 = 0
         if (channel0 != 0):
-            ratio1 = (channel1 << (self.TSL2561_LUX_RATIOSCALE+1)) / channel0
+            ratio1 = (channel1 << (self.TSL2561_LUX_RATIOSCALE + 1)) / channel0
 
         # round the ratio value */
         ratio = (ratio1 + 1) >> 1
@@ -504,25 +504,25 @@ class Adafruit_TSL2561(Adafruit_I2C):
             elif (ratio > self.TSL2561_LUX_K8T):
                 b=self.TSL2561_LUX_B8T
                 m=self.TSL2561_LUX_M8T
-        #endif
+        # endif
 
         temp = ((channel0 * b) - (channel1 * m))
 
         # Do not allow negative lux value */
-        if (temp < 0): 
+        if (temp < 0):
             temp = 0
 
         # Round lsb (2^(LUX_SCALE-1)) */
-        temp += (1 << (self.TSL2561_LUX_LUXSCALE-1))
+        temp += (1 << (self.TSL2561_LUX_LUXSCALE - 1))
 
         # Strip off fractional portion */
-        lux = temp >> self.TSL2561_LUX_LUXSCALE;
+        lux = temp >> self.TSL2561_LUX_LUXSCALE
 
         # Signal I2C had no errors */
         if (self._debug == True): print "calculateLux_end"
         return lux
 
-    def calculateAvgLux(self, testavg=TSL2561_NO_OF_AVG_SAMPLES):
+    def calculate_avg_lux(self, testavg=TSL2561_NO_OF_AVG_SAMPLES):
         """
         Calculates an averaged Lux value, useful for flickering lights and for smoothing values due to noise
 
@@ -534,28 +534,28 @@ class Adafruit_TSL2561(Adafruit_I2C):
         luxavgtotal = 0
         # Create a cumulative total of values for 'testavg' tests
         while True:
-            capture = self.calculateLux()
+            capture = self.calculate_lux()
             luxavgtotal = capture + luxavgtotal
             count += 1
             # Once we reach the number of required tests, work out the average
-            if ( count >= testavg ):
+            if (count >= testavg):
                 luxavg = round(luxavgtotal / testavg)
                 return (luxavg)
 
 if __name__ == "__main__":
     LightSensor = Adafruit_TSL2561()
-    LightSensor.enableAutoGain(True)
+    LightSensor.enable_auto_gain(True)
 
     # See if "loop" has been passed as an arg.
     try:
         arg = sys.argv[1]
-        if ( arg == "loop" ):
+        if (arg == "loop"):
             while True:
                 try:
-                    print (int(LightSensor.calculateAvgLux()))
+                    print (int(LightSensor.calculate_avg_lux()))
                 except KeyboardInterrupt:
                     quit()
         else:
             print ("Invalid arg(s):", sys.argv)
     except IndexError:
-        print (int(LightSensor.calculateAvgLux()))
+        print (int(LightSensor.calculate_avg_lux()))
