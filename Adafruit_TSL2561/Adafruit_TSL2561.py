@@ -28,7 +28,7 @@ import sys
 import time
 from Adafruit_I2C import Adafruit_I2C
 
-class Adafruit_TSL2651(Adafruit_I2C):
+class Adafruit_TSL2561(Adafruit_I2C):
     TSL2561_VISIBLE           =2       # channel 0 - channel 1
     TSL2561_INFRARED          =1       # channel 1
     TSL2561_FULLSPECTRUM      =0       # channel 0
