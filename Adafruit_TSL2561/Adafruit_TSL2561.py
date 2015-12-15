@@ -232,7 +232,7 @@ class Adafruit_TSL2561(Adafruit_I2C):
 #**************************************************************************/
 #   Constructor
 #**************************************************************************/
-    def __init__(self, addr=0x39, debug=False):
+    def __init__(self, addr=TSL2561_ADDR_FLOAT, debug=False):
         self._debug = debug
         if (self._debug == True): print "__init__"
         self._addr = addr
@@ -331,8 +331,8 @@ class Adafruit_TSL2561(Adafruit_I2C):
         # This is a hack to ensure that when looping with autogain the gain can go up and down as without
         # setting the gain to 1X before every reading it doesn't seem able to go from 16X
         # back to 1X again. Going from 1X to 16X works fine. - IC
-#        if (self._tsl2561AutoGain):
-#            self.setGain(self.TSL2561_GAIN_1X)
+        if (self._tsl2561AutoGain):
+            self.setGain(self.TSL2561_GAIN_1X)
 
         if (self._debug == True): print "getLuminosity"
         valid = False
