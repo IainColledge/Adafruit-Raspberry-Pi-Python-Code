@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 from Adafruit_TSL2561 import AdafruitTSL2561
 
 # Initialise the sensor

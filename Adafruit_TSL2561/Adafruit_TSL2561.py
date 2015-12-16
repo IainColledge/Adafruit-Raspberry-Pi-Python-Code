@@ -31,6 +31,7 @@ Changelog:
     Added hack so that with autogain every sample goes from 1x to 16x as going from 16x to 1x does not work
 """
 
+from __future__ import print_function
 import logging
 import sys
 import time
