@@ -22,6 +22,7 @@ Changelog:
     Bug #2: The read8 and read16 methods (functions) call the I2C readS8 and readS16 methods respectively.
             They should call the readU8 and readU16 (i.e. unsigned) methods.
     Minor fixes and changes due to Pycharm and SonarQube recommendations, it looks like Python more than C++ now
+    Added Exception thrown on sensor saturation
 1.0 - Initial release - Iain Colledge
     Removed commented out C++ code
     Added calculate_avg_lux
@@ -35,11 +36,11 @@ import sys
 import time
 from Adafruit_I2C import Adafruit_I2C
 
-# Logging needs to be set at top
-#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+# Logging needs to be set at top after imports
+# logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-
+# TODO: Not sure why this is inheriting the Adafruit I2C class, might need some refactoring
 class AdafruitTSL2561(Adafruit_I2C):
     TSL2561_VISIBLE           = 2       # channel 0 - channel 1
     TSL2561_INFRARED          = 1       # channel 1
@@ -354,6 +355,8 @@ class AdafruitTSL2561(Adafruit_I2C):
         # This is a hack to ensure that when looping with autogain the gain can go up and down as without
         # setting the gain to 1X before every reading it doesn't seem able to go from 16X
         # back to 1X again. Going from 1X to 16X works fine. - IC
+        # TODO: Grok the algorithm and fix it
+
         if self._tsl2561AutoGain:
             self.set_gain(self.TSL2561_GAIN_1X)
 
@@ -419,6 +422,8 @@ class AdafruitTSL2561(Adafruit_I2C):
         Returns 0 if the sensor is saturated and the values are unreliable.
 
         :return: lux value, unsigned 16bit word (0 - 65535)
+        :raises: OverflowError when TSL2561 sensor is saturated
+
         """
         logging.debug('calculate_lux')
         self.get_luminosity()
@@ -430,10 +435,8 @@ class AdafruitTSL2561(Adafruit_I2C):
         else:
             clip_threshold = self.TSL2561_CLIPPING_402MS
 
-        # Return 0 lux if the sensor is saturated */
-        # TODO: Throw an exception rather than return 0
         if (self._broadband > clip_threshold) or (self._ir > clip_threshold):
-            return 0
+            raise OverflowError('TSL2561 Sensor Saturated')
 
         # Get the correct scale depending on the intergration time */
         if self._tsl2561IntegrationTime ==self.TSL2561_INTEGRATIONTIME_13MS:
@@ -558,10 +561,12 @@ if __name__ == "__main__":
         if arg == "loop":
             while True:
                 try:
-                    print (int(LightSensor.calculate_avg_lux()))
+                    print(int(LightSensor.calculate_avg_lux()))
+                except OverflowError as e:
+                    print(e)
                 except KeyboardInterrupt:
                     quit()
         else:
-            print ("Invalid arg(s):", sys.argv)
+            print("Invalid arg(s):", sys.argv)
     except IndexError:
-        print (int(LightSensor.calculate_avg_lux()))
+        print(int(LightSensor.calculate_avg_lux()))

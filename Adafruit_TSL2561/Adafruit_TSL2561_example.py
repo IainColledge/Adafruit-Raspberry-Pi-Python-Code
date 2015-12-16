@@ -10,8 +10,9 @@ LightSensor = AdafruitTSL2561()
 LightSensor.enable_auto_gain(True)
 
 # Get the calculated lux value, this is a spot reading so if you're under light
-lux = LightSensor.calculate_lux()
-
-print('Lux value is %d',lux)
-
-
+try:
+    lux = LightSensor.calculate_lux()
+except OverflowError as e:
+    print(e)
+else:
+    print('Lux value is %d', lux)
