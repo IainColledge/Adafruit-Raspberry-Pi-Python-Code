@@ -436,6 +436,7 @@ class AdafruitTSL2561(Adafruit_I2C):
         else:
             clip_threshold = self.TSL2561_CLIPPING_402MS
 
+        # TODO: Fix that exception not raised when hits saturation but returns a Lux of around 780
         if (self._broadband > clip_threshold) or (self._ir > clip_threshold):
             raise OverflowError('TSL2561 Sensor Saturated')
 
@@ -568,6 +569,6 @@ if __name__ == "__main__":
                 except KeyboardInterrupt:
                     quit()
         else:
-            print("Invalid arg(s):", sys.argv)
+            print("Invalid arg(s):", sys.argv[1])
     except IndexError:
         print(int(LightSensor.calculate_avg_lux()))

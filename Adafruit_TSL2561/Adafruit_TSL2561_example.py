@@ -16,4 +16,4 @@ try:
 except OverflowError as e:
     print(e)
 else:
-    print('Lux value is %d', lux)
+    print("Lux value is ", lux)
