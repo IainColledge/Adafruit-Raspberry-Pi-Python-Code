@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-from Adafruit_TSL2561 import AdafruitTSL2561
+from Adafruit_TSL2561 import Adafruit_TSL2561
 
 # Initialise the sensor
-LightSensor = AdafruitTSL2561()
+LightSensor = Adafruit_TSL2561()
 
 # Enable auto gain switching between 1x and 16x
 # Default is False
